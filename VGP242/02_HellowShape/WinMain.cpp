@@ -8,11 +8,12 @@ using namespace KTEngine::Graphics;
 
 int WINAPI WinMain(HINSTANCE instance, HINSTANCE, LPSTR, int)
 {
-	App& myApp = KTEngine::MainApp();
-	myApp.AddState<GameState>("GameState");
-
 	AppConfig config;
-	config.appName = L"Hello Shape";
+	config.appName = L"Hello Shapes";
+
+	App& myApp = MainApp();
+	myApp.AddState<Triangle>("Triangle");
+	myApp.AddState<Square>("Square");
 	myApp.Run(config);
 
 	return(0);

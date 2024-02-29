@@ -6,29 +6,36 @@ using namespace KTEngine::Input;
 
 void GameState::Initialize()
 {
-	// create a shape
-	mMesh.vertices.push_back({ {-0.5f,-0.5f,0.0f}, Colors::Red });
-	mMesh.vertices.push_back({ {-0.5f,0.5f,0.0f}, Colors::Blue });
-	mMesh.vertices.push_back({ {0.5f,0.5f,0.0f}, Colors::Green });
-	mMesh.vertices.push_back({ {0.5f,-0.5f,0.0f}, Colors::Yellow });
-
-	mMesh.indices = {
-		0,1,2,
-		0,2,3
-	};
-
-	mMeshBuffer.Initialize(mMesh);
+	// create shapes in NDC normalized device coordinate
+	// -1 to 1 (x, y, z)
+	CreateShape();
 
 	auto device = GraphicsSystem::Get()->GetDevice();
-	//=====================================================================
-	//=====================================================================
-	//need to create a vertex shader
-	std::filesystem::path shaderFilePath = L"../../Assets/Shaders/DoSomething.fx";
+	// ===========================================================================
+	// Create a vertex buffer
+	D3D11_BUFFER_DESC bufferDesc{};
+	bufferDesc.ByteWidth = static_cast<UINT>(mVertices.size() * sizeof(Vertex));
+	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bufferDesc.MiscFlags = 0;
+	bufferDesc.StructureByteStride = 0;
+
+	D3D11_SUBRESOURCE_DATA initData{};
+	initData.pSysMem = mVertices.data();
+
+	HRESULT hr = device->CreateBuffer(&bufferDesc, &initData, &mVertexBuffer);
+	ASSERT(SUCCEEDED(hr), "Failed to crate vertex data");
+	// ===========================================================================
+	// 
+	// ===========================================================================
+	// Create a vertex shader
+	std::filesystem::path shaderFile = L"../../Assets/Shaders/DoSomething.fx";
+
 	DWORD shaderFlags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG;
 	ID3DBlob* shaderBlob = nullptr;
 	ID3DBlob* errorBlob = nullptr;
-	HRESULT hr = D3DCompileFromFile(
-		shaderFilePath.c_str(),
+	hr = D3DCompileFromFile(
+		shaderFile.c_str(),
 		nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE,
 		"VS", "vs_5_0",
@@ -49,16 +56,17 @@ void GameState::Initialize()
 		&mVertexShader
 	);
 	ASSERT(SUCCEEDED(hr), "Failed to create vertex shader");
-	//=====================================================================
-	//=====================================================================
-	//create the input layout
+	// ===========================================================================
+	// 
+	// ===========================================================================
+	// Create a input layer
 	std::vector<D3D11_INPUT_ELEMENT_DESC> vertexLayout;
 	vertexLayout.push_back({ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT });
-	vertexLayout.push_back({ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT });
+	vertexLayout.push_back({ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT });
 
 	hr = device->CreateInputLayout(
 		vertexLayout.data(),
-		static_cast<UINT>(vertexLayout.size()),
+		(UINT)vertexLayout.size(),
 		shaderBlob->GetBufferPointer(),
 		shaderBlob->GetBufferSize(),
 		&mInputLayout
@@ -66,11 +74,13 @@ void GameState::Initialize()
 	ASSERT(SUCCEEDED(hr), "Failed to create input layout");
 	SafeRelease(shaderBlob);
 	SafeRelease(errorBlob);
-	//=====================================================================
-	//=====================================================================
-	//last thing to create is a pixel shader
+	// ===========================================================================
+	// 
+	// ===========================================================================
+	// Create a pixel shader
+
 	hr = D3DCompileFromFile(
-		shaderFilePath.c_str(),
+		shaderFile.c_str(),
 		nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE,
 		"PS", "ps_5_0",
@@ -96,10 +106,11 @@ void GameState::Initialize()
 }
 void GameState::Terminate()
 {
-	mMeshBuffer.Terminate();
+	mVertices.clear();
 	SafeRelease(mPixelShader);
 	SafeRelease(mInputLayout);
 	SafeRelease(mVertexShader);
+	SafeRelease(mVertexBuffer);
 }
 void GameState::Update(float deltaTime)
 {
@@ -108,11 +119,49 @@ void GameState::Update(float deltaTime)
 void GameState::Render()
 {
 	auto context = GraphicsSystem::Get()->GetContext();
-	//binde
-	context->VSGetShader(&mVertexShader, nullptr, 0);
+
+	context->VSSetShader(mVertexShader, nullptr, 0);
 	context->IASetInputLayout(mInputLayout);
 	context->PSSetShader(mPixelShader, nullptr, 0);
 
-	mMeshBuffer.Render();
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	context->IASetVertexBuffers(0, 1, &mVertexBuffer, &stride, &offset);
+	context->Draw((UINT)mVertices.size(), 0);
 }
 
+void Triangle::Update(float deltaTime)
+{
+	if (InputSystem::Get()->IsKeyPressed(KeyCode::UP))
+	{
+		MainApp().ChangeState("Square");
+	}
+}
+
+void Triangle::CreateShape()
+{
+	mVertices.push_back({ {-0.5f, 0.0f, 0.0f}, Colors::Blue });
+	mVertices.push_back({ {0.0f, 0.75f, 0.0f}, Colors::Red });
+	mVertices.push_back({ {0.5f, 0.0f, 0.0f}, Colors::Green });
+}
+
+void Square::Update(float deltaTime)
+{
+	if (InputSystem::Get()->IsKeyPressed(KeyCode::DOWN))
+	{
+		MainApp().ChangeState("Triangle");
+	}
+}
+
+void Square::CreateShape()
+{
+	mVertices.push_back({ {-0.5f, 0.0f, 0.0f}, Colors::Blue });
+	mVertices.push_back({ {-0.5f, 0.75f, 0.0f}, Colors::Red });
+	mVertices.push_back({ {0.5f, 0.0f, 0.0f}, Colors::Green });
+
+	mVertices.push_back({ {-0.5f, 0.75f, 0.0f}, Colors::Red });
+	mVertices.push_back({ {0.5f, 0.75f, 0.0f}, Colors::Green });
+	mVertices.push_back({ {0.5f, 0.0f, 0.0f}, Colors::Blue });
+}
