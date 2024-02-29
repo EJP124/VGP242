@@ -5,6 +5,7 @@
 #include "GraphicsSystem.h"
 #include "Camera.h"
 #include "BlendState.h"
+#include "DebugUI.h"
 #include "Colors.h"
 #include "ConstantBuffer.h"
 #include "MeshBuffer.h"
