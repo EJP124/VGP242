@@ -1,6 +1,5 @@
 #include "GameState.h"
 
-
 using namespace KTEngine;
 using namespace KTEngine::Graphics;
 using namespace KTEngine::Math;
@@ -14,7 +13,6 @@ void GameState::Initialize()
 
 void GameState::Terminate()
 {
-	
 }
 
 void GameState::Update(float deltaTime)
@@ -50,7 +48,30 @@ void GameState::Render()
 void GameState::DebugUI()
 {
 	ImGui::Begin("Debug UI", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-	
+	int currentItem = (int)mShapeType;
+	const char* shapeTypeStr[] = { "Transform", "Sphere", "AABB", "AABBFilled", "Custom" };
+	if (ImGui::Combo("ShapeType##", &currentItem, shapeTypeStr, (int)ShapeType::Count))
+	{
+		mShapeType = (ShapeType)currentItem;
+	}
+
+	if (mShapeType != ShapeType::Transform)
+	{
+		ImGui::ColorEdit4("ShapeColor##", &mShapeColor.r);
+	}
+	else
+	{
+		mShapeColor = Colors::BlueViolet;
+	}
+
+	if (mShapeType == ShapeType::Sphere)
+	{
+		ImGui::DragFloat("SphereRadius##", &mSphereRadius, 0.1f, 0.5f, 10.0f);
+	}
+	else
+	{
+		mSphereRadius = 1.0f;
+	}
 	ImGui::End();
 }
 
