@@ -30,5 +30,8 @@ private:
 	Camera mCamera;
 	ShapeType mShapeType = ShapeType::Transform;
 	float mSphereRadius = 1.0f;
+	bool draw = true;
+	Vector3 min = {-1, -1, -1};
+	Vector3 max = { 1, 1, 1 };
 	Color mShapeColor = Colors::BlueViolet;
 };

@@ -4,6 +4,7 @@ using namespace KTEngine;
 using namespace KTEngine::Graphics;
 using namespace KTEngine::Math;
 using namespace KTEngine::Input;
+using namespace KTEngine::Colors;
 
 void GameState::Initialize()
 {
@@ -31,7 +32,7 @@ void GameState::Render()
 		SimpleDraw::AddSphere(30, 30, mSphereRadius, mShapeColor);
 		break;
 	case ShapeType::AABB:
-		SimpleDraw::AddAABB({-1, -1, -1}, {1, 1, 1}, mShapeColor);
+		SimpleDraw::AddAABB(min, max, mShapeColor);
 		break;
 	case ShapeType::AABBFilled:
 		SimpleDraw::AddFilledAABB({ -1, -1, -1 }, { 1, 1, 1 }, mShapeColor);
@@ -42,7 +43,7 @@ void GameState::Render()
 	default:
 		break;
 	}
-
+	if (draw) SimpleDraw::AddGroundPlane(50.f,White);
 	SimpleDraw::Render(mCamera);
 }
 void GameState::DebugUI()
@@ -54,7 +55,8 @@ void GameState::DebugUI()
 	{
 		mShapeType = (ShapeType)currentItem;
 	}
-
+	ImGui::Checkbox("Test##", &draw);
+	
 	if (mShapeType != ShapeType::Transform)
 	{
 		ImGui::ColorEdit4("ShapeColor##", &mShapeColor.r);
@@ -62,6 +64,12 @@ void GameState::DebugUI()
 	else
 	{
 		mShapeColor = Colors::BlueViolet;
+	}
+
+	if (mShapeType == ShapeType::AABB)
+	{
+		ImGui::DragFloat3("Min##", &min.x, 0.2f, -20.0f, 20.0f);
+		ImGui::DragFloat3("Max##", &max.x, 0.2f, -20.0f, 20.0f);
 	}
 
 	if (mShapeType == ShapeType::Sphere)
@@ -72,6 +80,7 @@ void GameState::DebugUI()
 	{
 		mSphereRadius = 1.0f;
 	}
+
 	ImGui::End();
 }
 
