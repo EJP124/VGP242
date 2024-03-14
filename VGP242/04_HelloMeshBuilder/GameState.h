@@ -18,7 +18,6 @@ protected:
 	virtual void CreateShape();
 	virtual std::string TexturePath() { return ""; };
 
-protected:
 	Camera mCamera;
 	ConstantBuffer mConstantBuffer;
 	MeshBuffer mMeshBuffer;

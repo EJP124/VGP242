@@ -322,7 +322,7 @@ MeshPX MeshBuilder::CreateSpherePX(uint32_t slices, uint32_t rings, float radius
 {
 	MeshPX mesh;
 
-	float vertRotation = (Math::Constants::Pi / static_cast<float>(rings - 1));
+	float vertRotation = (Math::Constants::Pi / static_cast<float>(rings));
 	float horzRotation = (Math::Constants::TwoPi / static_cast<float>(slices));
 	float uStep = 1.0f / static_cast<float>(slices);
 	float vStep = 1.0f / static_cast<float>(rings);

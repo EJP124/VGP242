@@ -161,7 +161,7 @@ void GraphicsSystem::Resize(uint32_t width, uint32_t height)
 
 	D3D11_TEXTURE2D_DESC descDepth = {};
 	descDepth.Width = GetBackBufferWidth();
-	descDepth.Width = GetBackBufferHeight();
+	descDepth.Height = GetBackBufferHeight();
 	descDepth.MipLevels = 1;
 	descDepth.ArraySize = 1;
 	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
