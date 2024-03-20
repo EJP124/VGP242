@@ -133,11 +133,13 @@
   <ItemGroup>
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="Planet.cpp" />
+    <ClCompile Include="Space.cpp" />
     <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameState.h" />
     <ClInclude Include="Planet.h" />
+    <ClInclude Include="Space.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Engine\KTEngine\KTEngine.vcxproj">

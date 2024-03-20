@@ -1,6 +1,7 @@
 #pragma once
 #include <KTEngine/Inc/KTEngine.h>
 #include "Planet.h"
+#include "Space.h"
 
 using namespace KTEngine;
 using namespace KTEngine::Graphics;
@@ -29,6 +30,30 @@ private:
 	bool _drawPlane;
 	Color _debugColor;
 
+	std::vector<float> worldRotSpeed =
+	{
+		0, //sun
+		1, //mercury
+		1, //venus
+		1, //earth
+		1, //mars
+		1, //jupiter
+		1, //saturn
+		1  //uranus
+	};
+
+	std::vector<float> selfRotSpeed =
+	{
+		0, //sun
+		1, //mercury
+		1, //venus
+		1, //earth
+		1, //mars
+		1, //jupiter
+		1, //saturn
+		1  //uranus
+	};
+
 	std::vector<std::shared_ptr<Planet>> mPlanets;
-	
+	Space mSpace;
 };

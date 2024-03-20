@@ -1,2 +1,3 @@
 D:\C++\VGP242\KTEngine\External\DirectXTK\Bin\Desktop_2019\x64\Debug\DirectXTK.lib
 C:\Users\LCV2132517\Documents\GitHub\VGP242\External\DirectXTK\Bin\Desktop_2019\x64\Debug\DirectXTK.lib
+E:\UnityProject\PreProduction\VGP242\External\DirectXTK\Bin\Desktop_2019\x64\Debug\DirectXTK.lib

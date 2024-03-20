@@ -7,6 +7,8 @@ using namespace KTEngine::Math;
 using namespace KTEngine::Input;
 using namespace KTEngine::Colors;
 
+
+
 void GameState::Initialize()
 {
 	_drawCir = true;
@@ -30,10 +32,16 @@ void GameState::Initialize()
 
 void GameState::CreateShape() 
 { 
-	mPlanets.push_back(std::make_shared<Planet>("../../Assets/Textures/planets/venus.jpg", 3.0f, 55.0f));
-	mPlanets.push_back(std::make_shared<Planet>("../../Assets/Textures/planets/saturn.jpg", 2.0f, 20.0f));
-	mPlanets.push_back(std::make_shared<Planet>("../../Assets/Textures/planets/uranus.jpg", 1.0f, 40.0f));
 	mPlanets.push_back(std::make_shared<Planet>("../../Assets/Textures/planets/sun.jpg", 10.0f, 0.0f));
+	mPlanets.push_back(std::make_shared<Planet>("../../Assets/Textures/planets/mercury.jpg", 0.8f, 20.0f));
+	mPlanets.push_back(std::make_shared<Planet>("../../Assets/Textures/planets/venus.jpg", 3.0f, 40.0f));
+	mPlanets.push_back(std::make_shared<Planet>("../../Assets/Textures/planets/earth/earth.jpg", 3.0f, 60.0f));
+	mPlanets.push_back(std::make_shared<Planet>("../../Assets/Textures/planets/mars.jpg", 1.0f, 80.0f));
+	mPlanets.push_back(std::make_shared<Planet>("../../Assets/Textures/planets/jupiter.jpg", 5.0f, 100.0f));
+	mPlanets.push_back(std::make_shared<Planet>("../../Assets/Textures/planets/saturn.jpg", 4.0f, 120.0f));
+	mPlanets.push_back(std::make_shared<Planet>("../../Assets/Textures/planets/uranus.jpg", 1.0f, 140.0f));
+
+	
 }
 
 
@@ -44,6 +52,11 @@ void GameState::Terminate()
 	mConstantBuffer.Terminate();
 	mPixelShader.Terminate();
 	mVertexShader.Terminate();
+	for (int i = 0; i < mPlanets.size(); i++)
+	{
+		mPlanets[i]->Terminate();
+	}
+	mSpace.Terminate();
 }
 
 void GameState::Update(float deltaTime)
@@ -51,8 +64,9 @@ void GameState::Update(float deltaTime)
 	UpdateCameraControl(deltaTime);
 	for (int i = 0; i < mPlanets.size(); i++)
 	{
-		mPlanets[i]->Update(deltaTime, 1.0f, 100.0f);
+		mPlanets[i]->Update(deltaTime, worldRotSpeed[i], selfRotSpeed[i]);
 	}
+	mSpace.Update(deltaTime);
 }
 
 void GameState::Render()
@@ -60,6 +74,7 @@ void GameState::Render()
 	mVertexShader.Bind();
 	mPixelShader.Bind();
 	mSampler.BindPS(0);
+	mSpace.Render(mCamera, mConstantBuffer);
 
 	for (int i = 0; i < mPlanets.size(); i++)
 	{
@@ -78,6 +93,25 @@ void GameState::DebugUI()
 	ImGui::Begin("Debug UI", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 	ImGui::Checkbox("Draw Route", &_drawCir);
 	ImGui::Checkbox("Draw Plane", &_drawPlane);
+	
+	ImGui::DragFloat("Sun worldRotSpeed##", &worldRotSpeed[0], 0.2f, -20.0f);
+	ImGui::DragFloat("mercury worldRotSpeed##", &worldRotSpeed[1], 0.2f, -20.0f);
+	ImGui::DragFloat("venus worldRotSpeed##", &worldRotSpeed[2], 0.2f, -20.0f);
+	ImGui::DragFloat("earth worldRotSpeed##", &worldRotSpeed[3], 0.2f, -20.0f);
+	ImGui::DragFloat("mars worldRotSpeed##", &worldRotSpeed[4], 0.2f, -20.0f);
+	ImGui::DragFloat("jupiter worldRotSpeed##", &worldRotSpeed[5], 0.2f, -20.0f);
+	ImGui::DragFloat("saturn worldRotSpeed##", &worldRotSpeed[6], 0.2f, -20.0f);
+	ImGui::DragFloat("uranus worldRotSpeed##", &worldRotSpeed[7], 0.2f, -20.0f);
+
+	ImGui::DragFloat("Sun selfRotSpeed##", &selfRotSpeed[0], 0.2f, -20.0f);
+	ImGui::DragFloat("mercury selfRotSpeed##", &selfRotSpeed[1], 0.2f, -20.0f);
+	ImGui::DragFloat("venus selfRotSpeed##", &selfRotSpeed[2], 0.2f, -20.0f);
+	ImGui::DragFloat("earth selfRotSpeed##", &selfRotSpeed[3], 0.2f, -20.0f);
+	ImGui::DragFloat("mars selfRotSpeed##", &selfRotSpeed[4], 0.2f, -20.0f);
+	ImGui::DragFloat("jupiter selfRotSpeed##", &selfRotSpeed[5], 0.2f, -20.0f);
+	ImGui::DragFloat("saturn selfRotSpeed##", &selfRotSpeed[6], 0.2f, -20.0f);
+	ImGui::DragFloat("uranus selfRotSpeed##", &selfRotSpeed[7], 0.2f, -20.0f);
+	
 	ImGui::ColorEdit4("RouteCOlor##", &_debugColor.r);
 	ImGui::End();
 }
