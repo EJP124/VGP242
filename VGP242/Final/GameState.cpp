@@ -27,6 +27,9 @@ void GameState::Initialize()
 	mPixelShader.Initialize(shaderFile);
 
 	mSampler.Initialize(Sampler::Filter::Linear, Sampler::AddressMode::Wrap);
+	mMesh = MeshBuilder::CreateSkySpherePX(100, 100, 1000);
+	mMeshBuffer.Initialize(mMesh);
+	mTexture.Initialize("../../Assets/Textures/skysphere/space.jpg");
 	CreateShape();
 }
 
@@ -52,11 +55,13 @@ void GameState::Terminate()
 	mConstantBuffer.Terminate();
 	mPixelShader.Terminate();
 	mVertexShader.Terminate();
+	mMeshBuffer.Terminate();
+	
 	for (int i = 0; i < mPlanets.size(); i++)
 	{
 		mPlanets[i]->Terminate();
 	}
-	mSpace.Terminate();
+	//mSpace.Terminate();
 }
 
 void GameState::Update(float deltaTime)
@@ -66,7 +71,7 @@ void GameState::Update(float deltaTime)
 	{
 		mPlanets[i]->Update(deltaTime, worldRotSpeed[i], selfRotSpeed[i]);
 	}
-	mSpace.Update(deltaTime);
+	//mSpace.Update(deltaTime);
 }
 
 void GameState::Render()
@@ -74,7 +79,9 @@ void GameState::Render()
 	mVertexShader.Bind();
 	mPixelShader.Bind();
 	mSampler.BindPS(0);
-	mSpace.Render(mCamera, mConstantBuffer);
+	mTexture.BindPS(0);
+	//mSpace.Render(mCamera, mConstantBuffer);
+	mMeshBuffer.Render();
 
 	for (int i = 0; i < mPlanets.size(); i++)
 	{
@@ -84,7 +91,6 @@ void GameState::Render()
 			SimpleDraw::AddGroundCircle(40, mPlanets[i]->GetDistance(), _debugColor);
 		}
 	}
-	
 
 	SimpleDraw::Render(mCamera);
 }
@@ -92,7 +98,6 @@ void GameState::DebugUI()
 {
 	ImGui::Begin("Debug UI", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 	ImGui::Checkbox("Draw Route", &_drawCir);
-	ImGui::Checkbox("Draw Plane", &_drawPlane);
 	
 	ImGui::DragFloat("Sun worldRotSpeed##", &worldRotSpeed[0], 0.2f, -20.0f);
 	ImGui::DragFloat("mercury worldRotSpeed##", &worldRotSpeed[1], 0.2f, -20.0f);

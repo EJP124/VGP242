@@ -1,7 +1,6 @@
 #pragma once
 #include <KTEngine/Inc/KTEngine.h>
 #include "Planet.h"
-#include "Space.h"
 
 using namespace KTEngine;
 using namespace KTEngine::Graphics;
@@ -55,5 +54,7 @@ private:
 	};
 
 	std::vector<std::shared_ptr<Planet>> mPlanets;
-	Space mSpace;
+	MeshPX mMesh;
+	MeshBuffer mMeshBuffer;
+	Texture mTexture;
 };
