@@ -38,7 +38,8 @@ private:
 		1, //mars
 		1, //jupiter
 		1, //saturn
-		1  //uranus
+		1,  //uranus
+		1  //pluto
 	};
 
 	std::vector<float> selfRotSpeed =
@@ -50,7 +51,8 @@ private:
 		1, //mars
 		1, //jupiter
 		1, //saturn
-		1  //uranus
+		1,  //uranus
+		1  //pluto
 	};
 
 	std::vector<std::shared_ptr<Planet>> mPlanets;

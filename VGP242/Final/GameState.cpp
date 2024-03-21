@@ -37,12 +37,13 @@ void GameState::CreateShape()
 { 
 	mPlanets.push_back(std::make_shared<Planet>("../../Assets/Textures/planets/sun.jpg", 10.0f, 0.0f));
 	mPlanets.push_back(std::make_shared<Planet>("../../Assets/Textures/planets/mercury.jpg", 0.8f, 20.0f));
-	mPlanets.push_back(std::make_shared<Planet>("../../Assets/Textures/planets/venus.jpg", 3.0f, 40.0f));
-	mPlanets.push_back(std::make_shared<Planet>("../../Assets/Textures/planets/earth/earth.jpg", 3.0f, 60.0f));
+	mPlanets.push_back(std::make_shared<Planet>("../../Assets/Textures/planets/venus.jpg", 3.0f, 30.0f));
+	mPlanets.push_back(std::make_shared<Planet>("../../Assets/Textures/planets/earth/earth.jpg", 3.0f, 40.0f));
 	mPlanets.push_back(std::make_shared<Planet>("../../Assets/Textures/planets/mars.jpg", 1.0f, 80.0f));
 	mPlanets.push_back(std::make_shared<Planet>("../../Assets/Textures/planets/jupiter.jpg", 5.0f, 100.0f));
 	mPlanets.push_back(std::make_shared<Planet>("../../Assets/Textures/planets/saturn.jpg", 4.0f, 120.0f));
 	mPlanets.push_back(std::make_shared<Planet>("../../Assets/Textures/planets/uranus.jpg", 1.0f, 140.0f));
+	mPlanets.push_back(std::make_shared<Planet>("../../Assets/Textures/planets/pluto.jpg", 1.0f, 240.0f));
 
 	
 }
@@ -88,7 +89,7 @@ void GameState::Render()
 		mPlanets[i]->Render(mCamera, mConstantBuffer);
 		if (_drawCir)
 		{
-			SimpleDraw::AddGroundCircle(40, mPlanets[i]->GetDistance(), _debugColor);
+			SimpleDraw::AddGroundCircle(1000, mPlanets[i]->GetDistance(), _debugColor);
 		}
 	}
 
@@ -107,6 +108,7 @@ void GameState::DebugUI()
 	ImGui::DragFloat("jupiter worldRotSpeed##", &worldRotSpeed[5], 0.2f, -20.0f);
 	ImGui::DragFloat("saturn worldRotSpeed##", &worldRotSpeed[6], 0.2f, -20.0f);
 	ImGui::DragFloat("uranus worldRotSpeed##", &worldRotSpeed[7], 0.2f, -20.0f);
+	ImGui::DragFloat("pluto worldRotSpeed##", &worldRotSpeed[8], 0.2f, -20.0f);
 
 	ImGui::DragFloat("Sun selfRotSpeed##", &selfRotSpeed[0], 0.2f, -20.0f);
 	ImGui::DragFloat("mercury selfRotSpeed##", &selfRotSpeed[1], 0.2f, -20.0f);
@@ -116,6 +118,7 @@ void GameState::DebugUI()
 	ImGui::DragFloat("jupiter selfRotSpeed##", &selfRotSpeed[5], 0.2f, -20.0f);
 	ImGui::DragFloat("saturn selfRotSpeed##", &selfRotSpeed[6], 0.2f, -20.0f);
 	ImGui::DragFloat("uranus selfRotSpeed##", &selfRotSpeed[7], 0.2f, -20.0f);
+	ImGui::DragFloat("pluto selfRotSpeed##", &selfRotSpeed[8], 0.2f, -20.0f);
 	
 	ImGui::ColorEdit4("RouteCOlor##", &_debugColor.r);
 	ImGui::End();

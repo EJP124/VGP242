@@ -157,7 +157,7 @@ void GameStatePC::Initialize()
 
 	// Create a vertex shader
 	mVertexShader.Initialize<VertexPX>(shaderFile);
-
+		
 	// Create a pixel shader
 	mPixelShader.Initialize(shaderFile);
 
