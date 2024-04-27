@@ -387,10 +387,10 @@ Mesh MeshBuilder::CreateSphere(uint32_t slices, uint32_t rings, float radius)
 {
 	Mesh mesh;
 
-	float vertRotation = (Math::Constants::Pi / static_cast<float>(rings - 1));
+	float vertRotation = (Math::Constants::Pi / static_cast<float>(rings));
 	float horzRotation = (Math::Constants::TwoPi / static_cast<float>(slices));
-	float uStep = 1.0f / static_cast<float>(slices);
-	float vStep = 1.0f / static_cast<float>(rings);
+	float uInc = 1.0f / static_cast<float>(slices);
+	float vInc = 1.0f / static_cast<float>(rings);
 
 	for (uint32_t r = 0; r <= rings; ++r)
 	{
@@ -401,16 +401,16 @@ Mesh MeshBuilder::CreateSphere(uint32_t slices, uint32_t rings, float radius)
 			float sPos = static_cast<float>(s);
 			float rotation = sPos * horzRotation;
 
-			float u = 1.0f - (uStep * sPos);
-			float v = vStep * rPos;
+			float u = 1.0f - (uInc * sPos);
+			float v = vInc * rPos;
 
 			float x = radius * sin(rotation) * sin(phi);
 			float y = radius * cos(phi);
 			float z = radius * cos(rotation) * sin(phi);
 			Math::Vector3 position = {x,y,z};
 			Math::Vector3 normal = Math::Normalize(position);
-			Math::Vector3 tangent = Math::Normalize({-z,0.0f,x});
-			Math::Vector2 uvCoord = { u,v };
+			Math::Vector3 tangent = Math::Normalize({ -z, 0.0f, x });
+			Math::Vector2 uvCoord = { u, v };
 
 			mesh.vertices.push_back({ 
 				position,

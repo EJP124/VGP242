@@ -8,115 +8,43 @@ using namespace KTEngine::Colors;
 
 void GameState::Initialize()
 {
-	mCamera.SetPosition({ 0.0f, 0.0f, -5.0f });
-	mCamera.SetLookAt({ 0.0f, 0.0f, 0.0f });
+	mCamera.SetPosition({ 0.0f, 1.0f, -3.0f });
+	mCamera.SetLookAt({ 0.0f, 0.0f,0.0f });
+
+	mMesh = MeshBuilder::CreateSpherePX(100, 100, 1.0f);
+	mRenderObject.meshBuffer.Initialize(mMesh);
+	mRenderObject.transform.position.x = 3.0f;
+
+	
+
+	std::filesystem::path shaderFilePath = L"../../Assets/Shaders/DoTexturing.fx";
+	mStandardEffect.Initialize(shaderFilePath);
+	mStandardEffect.SetCamera(mCamera);
 }
 
 void GameState::Terminate()
 {
+	mStandardEffect.Terminate();
+	mRenderObject.Terminate();
 }
 
 void GameState::Update(float deltaTime)
 {
-	UpdateCameraControl(deltaTime);
+	
 }
 
 void GameState::Render()
 {
-	switch (mShapeType)
-	{
-	case ShapeType::Transform:
-		SimpleDraw::AddTransform(Matrix4::Identity);
-		break;
-	case ShapeType::Sphere:
-		SimpleDraw::AddSphere(30, 30, mSphereRadius, mShapeColor);
-		break;
-	case ShapeType::AABB:
-		SimpleDraw::AddAABB(min, max, mShapeColor);
-		break;
-	case ShapeType::AABBFilled:
-		SimpleDraw::AddFilledAABB({ -1, -1, -1 }, { 1, 1, 1 }, mShapeColor);
-		break;
-	case ShapeType::Custom:
-		SimpleDraw::AddFilledAABB({ -1, -1, -1 }, { 1, 1, 1 }, mShapeColor);
-		break;
-	default:
-		break;
-	}
-	if (draw) SimpleDraw::AddGroundPlane(50.f,White);
+	SimpleDraw::AddGroundPlane(10.0f, Colors::White);
 	SimpleDraw::Render(mCamera);
+	mStandardEffect.Begin();
+		mStandardEffect.Render(mRenderObject);
+	mStandardEffect.End();
 }
 void GameState::DebugUI()
 {
-	ImGui::Begin("Debug UI", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-	int currentItem = (int)mShapeType;
-	const char* shapeTypeStr[] = { "Transform", "Sphere", "AABB", "AABBFilled", "Custom" };
-	if (ImGui::Combo("ShapeType##", &currentItem, shapeTypeStr, (int)ShapeType::Count))
-	{
-		mShapeType = (ShapeType)currentItem;
-	}
-	ImGui::Checkbox("Test##", &draw);
-	
-	if (mShapeType != ShapeType::Transform)
-	{
-		ImGui::ColorEdit4("ShapeColor##", &mShapeColor.r);
-	}
-	else
-	{
-		mShapeColor = Colors::BlueViolet;
-	}
-
-	if (mShapeType == ShapeType::AABB)
-	{
-		ImGui::DragFloat3("Min##", &min.x, 0.2f, -20.0f, 20.0f);
-		ImGui::DragFloat3("Max##", &max.x, 0.2f, -20.0f, 20.0f);
-	}
-
-	if (mShapeType == ShapeType::Sphere)
-	{
-		ImGui::DragFloat("SphereRadius##", &mSphereRadius, 0.1f, 0.5f, 10.0f);
-	}
-	else
-	{
-		mSphereRadius = 1.0f;
-	}
-
+	ImGui::Begin("Debug Controls", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+	mStandardEffect.DebugUI();
 	ImGui::End();
 }
 
-void GameState::UpdateCameraControl(float deltaTime)
-{
-	auto input = Input::InputSystem::Get();
-	const float moveSpeed = input->IsKeyDown(KeyCode::LSHIFT) ? 10.0f : 1.0f;
-	const float turnSpeed = 0.1f;
-
-	if (input->IsKeyDown(KeyCode::W))
-	{
-		mCamera.Walk(moveSpeed * deltaTime);
-	}
-	else if (input->IsKeyDown(KeyCode::S))
-	{
-		mCamera.Walk(-moveSpeed * deltaTime);
-	}
-	if (input->IsKeyDown(KeyCode::D))
-	{
-		mCamera.Strafe(moveSpeed * deltaTime);
-	}
-	else if (input->IsKeyDown(KeyCode::A))
-	{
-		mCamera.Strafe(-moveSpeed * deltaTime);
-	}
-	if (input->IsKeyDown(KeyCode::E))
-	{
-		mCamera.Rise(moveSpeed * deltaTime);
-	}
-	else if (input->IsKeyDown(KeyCode::Q))
-	{
-		mCamera.Rise(-moveSpeed * deltaTime);
-	}
-	if (input->IsMouseDown(MouseButton::RBUTTON))
-	{
-		mCamera.Yaw(input->GetMouseMoveX() * turnSpeed * deltaTime);
-		mCamera.Pitch(input->GetMouseMoveY() * turnSpeed * deltaTime);
-	}
-}
